@@ -21,6 +21,7 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import org.json.JSONArray;
@@ -65,15 +66,15 @@ public class MapsActivity extends FragmentActivity implements GooglePlayServices
                 Log.d("data", data.toString());
                 try {
                     JSONArray spots = data.getJSONArray("spots");
-                    for(int i=spots.length()-1;i>=0;i--){
-                        if(mMap != null){
+                    for (int i = spots.length() - 1; i >= 0; i--) {
+                        if (mMap != null) {
                             JSONObject spot = spots.getJSONObject(i);
-                            BitmapDescriptor fixedIcon = BitmapDescriptorFactory.fromResource(R.drawable.ic_greenmarker);
                             mMap.addMarker(
                                     new MarkerOptions()
                                             .position(new LatLng(spot.optDouble("latitude"), spot.optDouble("longitude")))
-                                            .icon(spot.optBoolean("fixed")? fixedIcon : null)
-                                );
+                                            .icon(BitmapDescriptorFactory.defaultMarker(spot.optBoolean("fixed") ?
+                                                    BitmapDescriptorFactory.HUE_AZURE : BitmapDescriptorFactory.HUE_RED))
+                            );
                         }
                     }
                 } catch (JSONException e) {
@@ -143,13 +144,27 @@ public class MapsActivity extends FragmentActivity implements GooglePlayServices
         Location mCurrentLocation = mLocationClient.getLastLocation();
 
         mMap.setMyLocationEnabled(true);
-        if(mCurrentLocation != null){
+        if (mCurrentLocation != null) {
+            BitmapDescriptor addIcon = BitmapDescriptorFactory.fromResource(R.drawable.ic_addmarker);
             MarkerOptions options = new MarkerOptions()
                     .position(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude()))
+                    .icon(addIcon)
+                    .title("add")
                     .draggable(false);
             mMap.addMarker(options);
             onLocationChanged(mCurrentLocation);
         }
+
+        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+                if("add".equals(marker.getTitle())) {
+                    Intent intent = new Intent(getApplicationContext(), ReportActivity.class);
+                    startActivity(intent);
+                }
+                return true;
+            }
+        });
 
         Toast.makeText(this, "Connected", Toast.LENGTH_SHORT).show();
         LocationRequest mLocationRequest = new LocationRequest();
@@ -171,7 +186,6 @@ public class MapsActivity extends FragmentActivity implements GooglePlayServices
     public void onLocationChanged(Location location) {
         mCurrentLocation = location;
         LatLng currentLocation = new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
-        mMap.addMarker(new MarkerOptions().position(currentLocation));
         mMap.animateCamera(CameraUpdateFactory.newLatLng(currentLocation), new GoogleMap.CancelableCallback() {
             @Override
             public void onFinish() {
