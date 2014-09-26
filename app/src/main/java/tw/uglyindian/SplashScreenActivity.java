@@ -18,7 +18,7 @@ public class SplashScreenActivity extends Activity{
                 Intent intent = new Intent(getApplicationContext(), MapsActivity.class);
                 startActivity(intent);
             }
-        }, 3000);
+        }, 10000);
     }
 
     @Override
