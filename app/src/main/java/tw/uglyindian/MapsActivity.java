@@ -24,7 +24,6 @@ public class MapsActivity extends FragmentActivity implements GooglePlayServices
         LocationListener {
 
     private GoogleMap mMap;
-    private Location mCurrentLocation;
     private LocationClient mLocationClient;
     private boolean mUpdatesRequested;
 
@@ -107,16 +106,18 @@ public class MapsActivity extends FragmentActivity implements GooglePlayServices
 
     @Override
     public void onConnected(Bundle dataBundle) {
-        mCurrentLocation = mLocationClient.getLastLocation();
+        Location mCurrentLocation = mLocationClient.getLastLocation();
+
         mMap.setMyLocationEnabled(true);
         if(mCurrentLocation != null){
             mMap.addMarker(new MarkerOptions().position(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude())));
-
         }
+
         Toast.makeText(this, "Connected", Toast.LENGTH_SHORT).show();
         LocationRequest mLocationRequest = new LocationRequest();
         mLocationRequest.setInterval(10000);
         mLocationRequest.setNumUpdates(6);
+
         if (mUpdatesRequested) {
             mLocationClient.requestLocationUpdates(mLocationRequest, this);
         }
