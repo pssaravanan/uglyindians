@@ -19,6 +19,7 @@
 
         <activity android:name=".MapsActivity"
             />
+        <activity android:name=".ReportActivity"/>
 
         <meta-data
             android:name="com.google.android.gms.version"

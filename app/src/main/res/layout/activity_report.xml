@@ -1,0 +1,30 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="tw.uglyindian.ReportActivity">
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1.5"
+        android:id="@+id/imgPost"
+        android:src="@drawable/ic_launcher"/>
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:hint="Enter event descriptions here"
+        android:id="@+id/etDescriptions"
+        android:lines="2"/>
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:id="@+id/btnReport"
+        android:layout_gravity="end"
+        android:layout_weight="0.2"
+        android:text="@string/title_activity_report"/>
+
+
+</LinearLayout>
