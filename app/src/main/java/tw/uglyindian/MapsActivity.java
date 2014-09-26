@@ -7,6 +7,7 @@ import android.content.SharedPreferences;
 import android.location.Location;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -14,10 +15,17 @@ import com.google.android.gms.common.GooglePlayServicesClient;
 import com.google.android.gms.location.LocationClient;
 import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class MapsActivity extends FragmentActivity implements GooglePlayServicesClient.ConnectionCallbacks,
         GooglePlayServicesClient.OnConnectionFailedListener,
@@ -25,6 +33,7 @@ public class MapsActivity extends FragmentActivity implements GooglePlayServices
 
     private GoogleMap mMap;
     private LocationClient mLocationClient;
+    private Location mCurrentLocation;
     private boolean mUpdatesRequested;
 
     private final static int
@@ -49,6 +58,31 @@ public class MapsActivity extends FragmentActivity implements GooglePlayServices
         setContentView(R.layout.activity_maps);
         setUpMapIfNeeded();
         mPrefs = this.getPreferences(MODE_PRIVATE);
+
+        DataFetcher.fetchData(new DataFetchListener() {
+            @Override
+            public void onFetchData(JSONObject data) {
+                Log.d("data", data.toString());
+                try {
+                    JSONArray spots = data.getJSONArray("spots");
+                    for(int i=spots.length()-1;i>=0;i--){
+                        if(mMap != null){
+                            JSONObject spot = spots.getJSONObject(i);
+                            BitmapDescriptor fixedIcon = BitmapDescriptorFactory.fromResource(R.drawable.ic_greenmarker);
+                            mMap.addMarker(
+                                    new MarkerOptions()
+                                            .position(new LatLng(spot.optDouble("latitude"), spot.optDouble("longitude")))
+                                            .icon(spot.optBoolean("fixed")? fixedIcon : null)
+                                );
+                        }
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+
     }
 
     private void setUpMapIfNeeded() {
@@ -110,7 +144,11 @@ public class MapsActivity extends FragmentActivity implements GooglePlayServices
 
         mMap.setMyLocationEnabled(true);
         if(mCurrentLocation != null){
-            mMap.addMarker(new MarkerOptions().position(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude())));
+            MarkerOptions options = new MarkerOptions()
+                    .position(new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude()))
+                    .draggable(false);
+            mMap.addMarker(options);
+            onLocationChanged(mCurrentLocation);
         }
 
         Toast.makeText(this, "Connected", Toast.LENGTH_SHORT).show();
@@ -131,10 +169,19 @@ public class MapsActivity extends FragmentActivity implements GooglePlayServices
 
     @Override
     public void onLocationChanged(Location location) {
-        MarkerOptions options = new MarkerOptions()
-                .position(new LatLng(location.getLatitude(), location.getLongitude()))
-                .draggable(false);
-        mMap.addMarker(options);
+        mCurrentLocation = location;
+        LatLng currentLocation = new LatLng(mCurrentLocation.getLatitude(), mCurrentLocation.getLongitude());
+        mMap.addMarker(new MarkerOptions().position(currentLocation));
+        mMap.animateCamera(CameraUpdateFactory.newLatLng(currentLocation), new GoogleMap.CancelableCallback() {
+            @Override
+            public void onFinish() {
+                mMap.animateCamera(CameraUpdateFactory.zoomTo(14f));
+            }
+
+            @Override
+            public void onCancel() {
+            }
+        });
     }
 
     @Override
