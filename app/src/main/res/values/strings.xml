@@ -4,5 +4,6 @@
     <string name="app_name">UglyIndian</string>
     <string name="title_activity_maps">Ugly Indian</string>
     <string name="title_activity_report">Report</string>
+    <string name="title_activity_join">Volunteer</string>
 
 </resources>

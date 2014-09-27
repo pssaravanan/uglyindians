@@ -1,6 +1,5 @@
 package tw.uglyindian;
 
-import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -11,7 +10,6 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Base64;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -31,8 +29,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
-import static android.widget.LinearLayout.*;
 
 
 public class ReportActivity extends Activity {
@@ -57,7 +53,6 @@ public class ReportActivity extends Activity {
         imgPost.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //set image
                 captureImage();
             }
         });
@@ -65,7 +60,6 @@ public class ReportActivity extends Activity {
         btnReport.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                // click to report
                 getMail();
                 if(bmp!=null)
                 decodeBmp();
@@ -114,7 +108,6 @@ public class ReportActivity extends Activity {
             HttpPost post = new HttpPost("http://sheltered-beyond-3165.herokuapp.com/spot_fix");
 
             try {
-                // Add your data
                 List<NameValuePair> nameSpotDetails = new ArrayList<NameValuePair>(2);
                 nameSpotDetails.add(new BasicNameValuePair("event_name", "clean"));
                 nameSpotDetails.add(new BasicNameValuePair("event_description",desc ));
@@ -124,8 +117,7 @@ public class ReportActivity extends Activity {
                 nameSpotDetails.add(new BasicNameValuePair("longitude", longitude+""));
                 post.setEntity(new UrlEncodedFormEntity(nameSpotDetails));
 
-                // Execute HTTP Post Request
-                HttpResponse response = client.execute(post);
+                client.execute(post);
             } catch (ClientProtocolException e) {
 
             } catch (IOException e) {
@@ -137,8 +129,6 @@ public class ReportActivity extends Activity {
 
         @Override
         protected void onPostExecute(String result) {
-            // might want to change "executed" for the returned string passed
-            // into onPostExecute() but that is upto you
             Toast.makeText(ReportActivity.this,"Posted Successfully",Toast.LENGTH_SHORT).show();
             finish();
         }

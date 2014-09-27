@@ -1,39 +1,63 @@
 package tw.uglyindian;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.Date;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 
 public class DataFetcher {
 
-    private static JSONObject getSampleObject() {
-        float latitude = 13.08389f, longitude = 80.27f;
+    public static void fetchData(DataFetchListener listener) {
+        String jsonString = getJSON("http://sheltered-beyond-3165.herokuapp.com/spot_fix");
+
+        JSONArray jsonObject = toJson(jsonString);
+        listener.onFetchData(jsonObject);
+    }
+
+    private static JSONArray toJson(String jsonString) {
+        JSONArray jsonArray = null;
+
         try {
-            JSONObject object = new JSONObject();
-            JSONArray spots = new JSONArray();
-            for (int i=0; i<10;i++)
-                spots.put(getSpot(latitude, longitude));
-            return object.put("spots", spots);
-        } catch (JSONException e) {
+            jsonArray = new JSONArray(jsonString);
+            JSONArray jsonObjects = new JSONArray();
+            for (int i = 0; i < jsonArray.length(); i++) {
+                jsonObjects.put(new JSONObject(jsonArray.get(0).toString()));
+            }
+
+        } catch (Exception e) {
             e.printStackTrace();
-            return new JSONObject();
         }
+
+        return jsonArray;
     }
 
-    private static JSONObject getSpot(float latitude, float longitude) throws JSONException {
-        JSONObject object = new JSONObject();
-        object.put("latitude" , latitude + (Math.random() - 0.5))
-                .put("longitude", longitude + Math.random() - 0.5)
-                .put("date", new Date().getTime() + (864000000 * (Math.random() - 0.5)))
-                .put("fixed", Math.random() > 0.5);
-        return object;
-    }
+    private static String getJSON(String address) {
+        StringBuilder builder = new StringBuilder();
+        HttpClient client = new DefaultHttpClient();
+        HttpGet httpGet = new HttpGet(address);
+        httpGet.setHeader("Content-type", "application/json");
 
-    public static void fetchData(DataFetchListener listener){
-        if(listener == null)
-            return;
-        listener.onFetchData(getSampleObject());
+        try {
+            HttpResponse response = client.execute(httpGet);
+            HttpEntity entity = response.getEntity();
+            InputStream content = entity.getContent();
+            BufferedReader reader = new BufferedReader(new InputStreamReader(content));
+            String line;
+
+            while ((line = reader.readLine()) != null) {
+                builder.append(line);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return builder.toString();
     }
 }

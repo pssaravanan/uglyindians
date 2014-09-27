@@ -5,9 +5,9 @@ import android.content.Intent;
 import android.content.IntentSender;
 import android.content.SharedPreferences;
 import android.location.Location;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -28,11 +28,13 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+
 public class MapsActivity extends FragmentActivity implements GooglePlayServicesClient.ConnectionCallbacks,
         GooglePlayServicesClient.OnConnectionFailedListener,
         LocationListener {
 
     private GoogleMap mMap;
+    private JSONArray data;
     private LocationClient mLocationClient;
     private Location mCurrentLocation;
     private boolean mUpdatesRequested;
@@ -60,30 +62,7 @@ public class MapsActivity extends FragmentActivity implements GooglePlayServices
         setUpMapIfNeeded();
         mPrefs = this.getSharedPreferences("THE_UGLY_INDIAN_PREFS", MODE_PRIVATE);
 
-        DataFetcher.fetchData(new DataFetchListener() {
-            @Override
-            public void onFetchData(JSONObject data) {
-                Log.d("data", data.toString());
-                try {
-                    JSONArray spots = data.getJSONArray("spots");
-                    for (int i = spots.length() - 1; i >= 0; i--) {
-                        if (mMap != null) {
-                            JSONObject spot = spots.getJSONObject(i);
-                            mMap.addMarker(
-                                    new MarkerOptions()
-                                            .position(new LatLng(spot.optDouble("latitude"), spot.optDouble("longitude")))
-                                            .icon(BitmapDescriptorFactory.defaultMarker(spot.optBoolean("fixed") ?
-                                                    BitmapDescriptorFactory.HUE_AZURE : BitmapDescriptorFactory.HUE_RED))
-                            );
-                        }
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-
-
+        new LongOperation().execute();
     }
 
     private void setUpMapIfNeeded() {
@@ -163,10 +142,15 @@ public class MapsActivity extends FragmentActivity implements GooglePlayServices
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
-                if("add".equals(marker.getTitle())) {
-                    Intent intent = new Intent(getApplicationContext(), ReportActivity.class);
-                    startActivity(intent);
+                Intent intent;
+                if ("add".equals(marker.getTitle())) {
+                    intent = new Intent(getApplicationContext(), ReportActivity.class);
+                } else {
+                    intent = new Intent(getApplicationContext(), SpotFixDetailViewActivity.class);
+                    intent.putExtra("oid", marker.getTitle());
                 }
+                startActivity(intent);
+
                 return true;
             }
         });
@@ -216,6 +200,55 @@ public class MapsActivity extends FragmentActivity implements GooglePlayServices
         } else {
             Toast.makeText(this, "Error. " + connectionResult.getErrorCode(),
                     Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private class LongOperation extends AsyncTask<String, Void, String> {
+
+        @Override
+        protected String doInBackground(String... values) {
+            DataFetcher.fetchData(new DataFetchListener() {
+                @Override
+                public void onFetchData(JSONArray response) {
+                    data = response;
+                }
+            });
+
+            return "success";
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+
+            for (int i = data.length() - 1; i >= 0; i--) {
+                if (mMap != null) {
+                    try {
+                        JSONObject spot = toJson(data.get(i).toString());
+                        mMap.addMarker(
+                                new MarkerOptions()
+                                        .position(new LatLng(spot.optDouble("latitude"), spot.optDouble("longitude")))
+                                        .icon(BitmapDescriptorFactory.defaultMarker(spot.optBoolean("fixed") ?
+                                                BitmapDescriptorFactory.HUE_AZURE : BitmapDescriptorFactory.HUE_RED))
+                                        .title(toJson(spot.get("_id").toString()).get("$oid").toString())
+                        );
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+
+        private JSONObject toJson(String jsonString){
+            JSONObject jsonObject = null;
+
+            try {
+                jsonObject = new JSONObject(jsonString);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            return jsonObject;
         }
     }
 }

@@ -1,7 +1,7 @@
 package tw.uglyindian;
 
-import org.json.JSONObject;
+import org.json.JSONArray;
 
 public interface DataFetchListener {
-    public void onFetchData(JSONObject data);
+    public void onFetchData(JSONArray data);
 }
