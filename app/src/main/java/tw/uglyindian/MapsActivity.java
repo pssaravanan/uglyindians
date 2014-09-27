@@ -58,7 +58,7 @@ public class MapsActivity extends FragmentActivity implements GooglePlayServices
         mLocationClient = new LocationClient(this, this, this);
         setContentView(R.layout.activity_maps);
         setUpMapIfNeeded();
-        mPrefs = this.getPreferences(MODE_PRIVATE);
+        mPrefs = this.getSharedPreferences("THE_UGLY_INDIAN_PREFS", MODE_PRIVATE);
 
         DataFetcher.fetchData(new DataFetchListener() {
             @Override
@@ -142,6 +142,11 @@ public class MapsActivity extends FragmentActivity implements GooglePlayServices
     @Override
     public void onConnected(Bundle dataBundle) {
         Location mCurrentLocation = mLocationClient.getLastLocation();
+
+        SharedPreferences.Editor preferenceEditor = mPrefs.edit();
+        preferenceEditor.putFloat("latitude", new Float(mCurrentLocation.getLatitude()));
+        preferenceEditor.putFloat("longitude", new Float(mCurrentLocation.getLongitude()));
+        preferenceEditor.commit();
 
         mMap.setMyLocationEnabled(true);
         if (mCurrentLocation != null) {

@@ -43,6 +43,8 @@ public class ReportActivity extends Activity {
     Bitmap bmp;
     String encoded,eMail;
     SharedPreferences sharedpreferences;
+    private float latitude;
+    private float longitude;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,6 +78,8 @@ public class ReportActivity extends Activity {
         String the_ugly_indian_prefs = "THE_UGLY_INDIAN_PREFS";
         sharedpreferences = getSharedPreferences(the_ugly_indian_prefs, Context.MODE_PRIVATE);
         eMail = sharedpreferences.getString("email","");
+        latitude = sharedpreferences.getFloat("latitude",0);
+        longitude = sharedpreferences.getFloat("longitude",0);
     }
 
     private void decodeBmp() {
@@ -116,6 +120,8 @@ public class ReportActivity extends Activity {
                 nameSpotDetails.add(new BasicNameValuePair("event_description",desc ));
                 nameSpotDetails.add(new BasicNameValuePair("image", encoded));
                 nameSpotDetails.add(new BasicNameValuePair("initiator", eMail));
+                nameSpotDetails.add(new BasicNameValuePair("latitude", latitude+""));
+                nameSpotDetails.add(new BasicNameValuePair("longitude", longitude+""));
                 post.setEntity(new UrlEncodedFormEntity(nameSpotDetails));
 
                 // Execute HTTP Post Request

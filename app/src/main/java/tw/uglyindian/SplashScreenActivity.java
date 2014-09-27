@@ -28,8 +28,9 @@ public class SplashScreenActivity extends Activity{
                 public void run() {
                     Intent intent = new Intent(getApplicationContext(), MapsActivity.class);
                     startActivity(intent);
+                    finish();
                 }
-            }, 2000);
+            }, 1000);
         } else {
             final EditText emailAddress = (EditText) findViewById(R.id.email_address);
             emailAddress.setVisibility(View.VISIBLE);
@@ -44,6 +45,7 @@ public class SplashScreenActivity extends Activity{
                     preferenceEditor.commit();
                     Intent intent = new Intent(getApplicationContext(), MapsActivity.class);
                     startActivity(intent);
+                    finish();
                 }
             });
 
