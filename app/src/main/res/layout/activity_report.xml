@@ -3,14 +3,16 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="tw.uglyindian.ReportActivity">
+    tools:context="tw.uglyindian.ReportActivity"
+    android:background="@color/background">
 
     <ImageView
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
+        android:layout_gravity="center_horizontal"
         android:layout_height="0dp"
         android:layout_weight="1.5"
         android:id="@+id/imgPost"
-        android:src="@drawable/ic_launcher"/>
+        android:src="@drawable/camera_icon"/>
     <EditText
         android:layout_width="match_parent"
         android:layout_height="0dp"

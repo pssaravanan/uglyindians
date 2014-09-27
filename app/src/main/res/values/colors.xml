@@ -2,4 +2,5 @@
 <resources>
     <item name="brown" type="color">#9A4617</item>
     <item name="white" type="color">#FFFFFF</item>
+    <item name="background" type="color">#dbd7cb</item>
 </resources>

@@ -43,9 +43,6 @@ public class ReportActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_report);
-
-
-
         etDescription = (EditText) findViewById(R.id.etDescriptions);
         btnReport = (Button) findViewById(R.id.btnReport);
         imgPost = (ImageView) findViewById(R.id.imgPost);
