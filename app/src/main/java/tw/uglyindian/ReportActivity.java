@@ -1,5 +1,6 @@
 package tw.uglyindian;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -10,9 +11,11 @@ import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.Base64;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import org.apache.http.HttpResponse;
@@ -28,6 +31,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import static android.widget.LinearLayout.*;
 
 
 public class ReportActivity extends Activity {
@@ -93,6 +98,7 @@ public class ReportActivity extends Activity {
             Bundle extras = data.getExtras();
             bmp = (Bitmap) extras.get("data");
             imgPost.setImageBitmap(bmp);
+            imgPost.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0, 1.5f));
         }
     }
     private class LongOperation extends AsyncTask<String, Void, String> {
@@ -114,8 +120,6 @@ public class ReportActivity extends Activity {
 
                 // Execute HTTP Post Request
                 HttpResponse response = client.execute(post);
-
-
             } catch (ClientProtocolException e) {
 
             } catch (IOException e) {
