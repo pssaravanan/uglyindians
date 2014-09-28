@@ -6,6 +6,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -19,6 +20,16 @@ public class DataFetcher {
 
         JSONArray jsonObject = toJson(jsonString);
         listener.onFetchData(jsonObject);
+    }
+
+    public static void fetchSpotDetails(String spotFixId, DataFetchListener listener){
+        String responseJson = getJSON("http://sheltered-beyond-3165.herokuapp.com/spot_fix/" + spotFixId);
+
+        try {
+            listener.onFetchData(new JSONObject(responseJson));
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     private static JSONArray toJson(String jsonString) {

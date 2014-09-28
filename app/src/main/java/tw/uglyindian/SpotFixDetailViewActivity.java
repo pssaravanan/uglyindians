@@ -2,18 +2,22 @@ package tw.uglyindian;
 
 
 import android.app.Activity;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
+import android.util.Base64;
+import android.widget.ImageView;
+import android.widget.TextView;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-
-import java.io.IOException;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class SpotFixDetailViewActivity extends Activity {
+
+    private String spotFixImageUrl;
+    private String eventDescription;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -25,7 +29,6 @@ public class SpotFixDetailViewActivity extends Activity {
     protected void onStart() {
         super.onStart();
         String oid = getIntent().getStringExtra("oid");
-        Log.d("UGLYY", oid);
         new LongOperation().execute(oid);
     }
 
@@ -43,16 +46,32 @@ public class SpotFixDetailViewActivity extends Activity {
 
         @Override
         protected String doInBackground(String... oids) {
-            HttpClient client = new DefaultHttpClient();
-            Log.d("UGLY", oids[0].toString());
-            HttpGet get = new HttpGet("http://sheltered-beyond-3165.herokuapp.com/spot_fix/"+oids[0]);
-            try {
-                HttpResponse response = client.execute(get);
-                Log.d("UGLY", response.getEntity().toString());
-            } catch (IOException e) {
+            DataFetcher.fetchSpotDetails(oids[0], new DataFetchListener() {
+                @Override
+                public void onFetchData(JSONObject data) {
+                    try {
+                        eventDescription = data.getString("event_description");
+                        spotFixImageUrl = data.getString("initial_image");
 
-            }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+
             return "success";
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            TextView filename = (TextView)findViewById(R.id.description);
+            filename.setText(eventDescription);
+
+            byte[] decodedBytes = Base64.decode(spotFixImageUrl.getBytes(), Base64.DEFAULT);
+            Bitmap bmp = BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.length);
+            ImageView img;
+            img = (ImageView) findViewById(R.id.spotFixImage);
+            img.setImageBitmap(bmp);
         }
     }
 }

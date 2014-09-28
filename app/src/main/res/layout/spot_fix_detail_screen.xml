@@ -11,7 +11,7 @@
         android:layout_gravity="center_horizontal"
         android:layout_height="0dp"
         android:layout_weight="1.5"
-        android:id="@+id/imgPost"
+        android:id="@+id/spotFixImage"
         android:src="@drawable/camera_icon"/>
     <TextView
         android:layout_width="match_parent"

@@ -16,7 +16,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
@@ -111,7 +110,7 @@ public class ReportActivity extends Activity {
                 List<NameValuePair> nameSpotDetails = new ArrayList<NameValuePair>(2);
                 nameSpotDetails.add(new BasicNameValuePair("event_name", "clean"));
                 nameSpotDetails.add(new BasicNameValuePair("event_description",desc ));
-                nameSpotDetails.add(new BasicNameValuePair("image", encoded));
+                nameSpotDetails.add(new BasicNameValuePair("initial_image", encoded));
                 nameSpotDetails.add(new BasicNameValuePair("initiator", eMail));
                 nameSpotDetails.add(new BasicNameValuePair("latitude", latitude+""));
                 nameSpotDetails.add(new BasicNameValuePair("longitude", longitude+""));
