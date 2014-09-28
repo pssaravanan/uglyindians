@@ -37,10 +37,10 @@ public class MapsActivity extends FragmentActivity implements GooglePlayServices
     private JSONArray data;
     private LocationClient mLocationClient;
     private Location mCurrentLocation;
-    private boolean mUpdatesRequested;
+    private Marker currentLocationMarker;
 
-    private final static int
-            CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;
+    private boolean mUpdatesRequested;
+    private final static int CONNECTION_FAILURE_RESOLUTION_REQUEST = 9000;
 
     @Override
     protected void onActivityResult(
@@ -128,6 +128,8 @@ public class MapsActivity extends FragmentActivity implements GooglePlayServices
         preferenceEditor.commit();
 
         mMap.setMyLocationEnabled(true);
+        if(currentLocationMarker != null) currentLocationMarker.remove();
+
         if (mCurrentLocation != null) {
             BitmapDescriptor addIcon = BitmapDescriptorFactory.fromResource(R.drawable.ic_addmarker);
             MarkerOptions options = new MarkerOptions()
@@ -137,6 +139,8 @@ public class MapsActivity extends FragmentActivity implements GooglePlayServices
                     .draggable(false);
             mMap.addMarker(options);
             onLocationChanged(mCurrentLocation);
+
+            currentLocationMarker = mMap.addMarker(options);
         }
 
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
