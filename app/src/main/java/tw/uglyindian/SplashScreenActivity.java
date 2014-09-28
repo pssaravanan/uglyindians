@@ -1,21 +1,27 @@
 package tw.uglyindian;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import static tw.uglyindian.AppHelper.*;
+
 public class SplashScreenActivity extends Activity{
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        if(!isNetworkAvailable(connectivityManager)) handleNetWorkFailure(this);
+
         setContentView(R.layout.splash_screen);
 
         String the_ugly_indian_prefs = "THE_UGLY_INDIAN_PREFS";
