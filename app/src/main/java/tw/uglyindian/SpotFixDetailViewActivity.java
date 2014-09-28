@@ -8,6 +8,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Base64;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import org.json.JSONArray;
@@ -67,11 +68,16 @@ public class SpotFixDetailViewActivity extends Activity {
             TextView filename = (TextView)findViewById(R.id.description);
             filename.setText(eventDescription);
 
+            showImage();
+        }
+
+        private void showImage() {
             byte[] decodedBytes = Base64.decode(spotFixImageUrl.getBytes(), Base64.DEFAULT);
             Bitmap bmp = BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.length);
             ImageView img;
             img = (ImageView) findViewById(R.id.spotFixImage);
             img.setImageBitmap(bmp);
+            img.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 0, 1.5f));
         }
     }
 }
