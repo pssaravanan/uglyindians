@@ -1,6 +1,7 @@
 package tw.uglyindian;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -99,6 +100,7 @@ public class ReportActivity extends Activity {
         }
     }
     private class LongOperation extends AsyncTask<String, Void, String> {
+        private ProgressDialog dialog;
 
         @Override
         protected String doInBackground(String... params) {
@@ -128,12 +130,19 @@ public class ReportActivity extends Activity {
 
         @Override
         protected void onPostExecute(String result) {
+            if (dialog.isShowing()) {
+                dialog.dismiss();
+            }
             Toast.makeText(ReportActivity.this,"Posted Successfully",Toast.LENGTH_SHORT).show();
             finish();
         }
 
         @Override
-        protected void onPreExecute() {}
+        protected void onPreExecute() {
+            dialog = new ProgressDialog(ReportActivity.this);
+            dialog.setMessage("Posting..");
+            dialog.show();
+        }
 
         @Override
         protected void onProgressUpdate(Void... values) {}

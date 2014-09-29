@@ -2,6 +2,7 @@ package tw.uglyindian;
 
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
@@ -11,7 +12,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import org.json.JSONArray;
+
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -44,7 +46,7 @@ public class SpotFixDetailViewActivity extends Activity {
     }
 
     private class LongOperation extends AsyncTask<String, Void, String> {
-
+        private ProgressDialog dialog;
         @Override
         protected String doInBackground(String... oids) {
             DataFetcher.fetchSpotDetails(oids[0], new DataFetchListener() {
@@ -68,7 +70,16 @@ public class SpotFixDetailViewActivity extends Activity {
             TextView filename = (TextView)findViewById(R.id.description);
             filename.setText(eventDescription);
 
+                if (dialog.isShowing()) {
+                    dialog.dismiss();
+           }
             showImage();
+        }
+        @Override
+        protected void onPreExecute() {
+            dialog = new ProgressDialog(SpotFixDetailViewActivity.this);
+            dialog.setMessage("Fetching details..");
+            dialog.show();
         }
 
         private void showImage() {
