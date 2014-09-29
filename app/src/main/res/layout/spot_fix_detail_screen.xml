@@ -19,6 +19,11 @@
         android:layout_weight="1"
         android:background="@color/white"
         android:editable="false"
+        android:textColor="@color/brown"
+        android:text=""
+        android:textAppearance="@android:style/TextAppearance.Large"
+        android:gravity="center"
+        android:textAlignment="gravity"
         android:id="@+id/description"/>
     <Button
         android:layout_width="wrap_content"
