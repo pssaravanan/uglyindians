@@ -1,6 +1,7 @@
 package tw.uglyindian;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.SharedPreferences;
@@ -208,7 +209,7 @@ public class MapsActivity extends FragmentActivity implements GooglePlayServices
     }
 
     private class LongOperation extends AsyncTask<String, Void, String> {
-
+        private ProgressDialog dialog;
         @Override
         protected String doInBackground(String... values) {
             DataFetcher.fetchData(new DataFetchListener() {
@@ -219,6 +220,12 @@ public class MapsActivity extends FragmentActivity implements GooglePlayServices
             });
 
             return "success";
+        }
+        @Override
+        protected void onPreExecute() {
+            dialog = new ProgressDialog(MapsActivity.this);
+            dialog.setMessage("Loading..");
+            dialog.show();
         }
 
         @Override
@@ -241,6 +248,10 @@ public class MapsActivity extends FragmentActivity implements GooglePlayServices
                     }
                 }
             }
+            if (dialog.isShowing()) {
+                dialog.dismiss();
+            }
+            Toast.makeText(MapsActivity.this,"Load Complete",Toast.LENGTH_SHORT).show();
         }
 
         private JSONObject toJson(String jsonString){
